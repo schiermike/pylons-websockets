@@ -1,0 +1,43 @@
+GET /ws HTTP/1.1
+    """
+    A WSGI handler that will perform the :rfc:`6455`
+    upgrade and handshake before calling the WSGI application.
+
+    If the incoming request doesn't have a `'Upgrade'` header,
+    the handler will simply fallback to the gevent builtin's handler
+    and process it as per usual.
+    """
+
+    def run_application(self):
+        upgrade_header = self.environ.get('HTTP_UPGRADE', '').lower()
+        if upgrade_header:
+            try:
+                # Build and start the HTTP response
+                self.environ['ws4py.socket'] = self.socket or self.environ['wsgi.input'].rfile._sock
+                self.result = self.application(self.environ, self.start_response) or []
+                self.process_result()
+            except:
+
+Upgrade: websocket
+Connection: Upgrade
+Host: 127.0.0.1:9000
+Origin: http://localhost:9000
+Pragma: no-cache
+Cache-Control: no-cache
+Sec-WebSocket-Key: 11YWXkcOPDrr3RQb4gU7IQ==
+Sec-WebSocket-Version: 13
+Sec-WebSocket-Extensions: x-webkit-deflate-frame
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36
+
+
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-Websocket-Version: 13
+Sec-Websocket-Accept: T/VyQWYwjp7dSWDUVj+m2cDsCJk=
+Date: Wed, 09 Oct 2013 09:29:46 GMT
+Content-Length: 0
+
+
+...H...;...p...<...,...-...'.
+..User68 entered the room

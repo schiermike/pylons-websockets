@@ -7,8 +7,22 @@ from paste.deploy.converters import asbool
 from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
+from ws4py.server.wsgiutils import WebSocketWSGIApplication
 
 from pylons101.config.environment import load_environment
+
+
+class WebSocketMiddleware(WebSocketWSGIApplication):
+    def __init__(self, app):
+        self.app = app
+        WebSocketWSGIApplication.__init__(self)
+
+    def __call__(self, environ, start_response):
+        if 'ws4py.socket' in environ:
+            WebSocketWSGIApplication.__call__(self, environ, start_response)
+        response = self.app(environ, start_response)
+        return response
+
 
 def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     """Create a Pylons WSGI application and return it
@@ -38,6 +52,7 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
 
     # The Pylons WSGI app
     app = PylonsApp(config=config)
+    #app = WebSocketMiddleware(app)
 
     # Routing/Session Middleware
     app = RoutesMiddleware(app, config['routes.map'], singleton=False)

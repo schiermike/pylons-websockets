@@ -1,16 +1,23 @@
 """Entry point for PasteDeploy."""
 
+import socket
 from gevent import reinit
-from gevent.pywsgi import WSGIServer
 from gevent.monkey import patch_all
-from geventwebsocket.handler import WebSocketHandler
+from ws4py.server.geventserver import WebSocketWSGIHandler, WSGIServer
 
 __all__ = ["server_factory_patched"]
 
-def server_factory_patched(global_conf, host, port):
+
+def server_factory_patched(global_conf, host=None, port=None):
     port = int(port)
+    patch_all(dns=False)
+
     def serve(app):
+        listener = (host, port)
+#        listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#        listener.bind((host, port))
+#        listener.listen(port)
+
         reinit()
-        patch_all(dns=False)
-        WSGIServer((host, port), app, handler_class=WebSocketHandler).serve_forever()
+        WSGIServer(listener, app, handler_class=WebSocketWSGIHandler).serve_forever()
     return serve

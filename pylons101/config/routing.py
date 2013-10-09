@@ -10,6 +10,7 @@ def make_map(config):
     map.connect('/error/{action}/{id}', controller='error')
 
     map.connect('/', controller='home', action='home')
+    map.connect('/js', controller='home', action='js_playground')
     map.connect('/ws', controller='home', action='ws')
 
     return map

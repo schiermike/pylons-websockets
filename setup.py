@@ -7,7 +7,9 @@ setup(
         "Pylons>=1.0.1rc1",
         "SQLAlchemy>=0.5",
         'gevent-websocket>=0.3.6',
-        'redis>=2.8'
+        'redis>=2.8',
+        'ws2py>=0.3.2',
+        'gunicorn>=18.0'
     ],
     setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(),
